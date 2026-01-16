@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Track-It-Down | Crime Tracking System</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Login Screen -->
+        <div id="login-screen" class="screen active">
+            <div class="login-container">
+                <div class="logo-header">
+                    <!-- Site logo: using provided image file in project root -->
+                    <img src="TRACKIT DOWN LOGO.png" alt="Track-It-Down logo" class="logo-img">
+                    <h1>Track-It-Down</h1>
+                    <p class="tagline">Community Crime Reporting & Tracking</p>
+                </div>
+                
+                <div class="login-form">
+                    <h2>Login to Dashboard</h2>
+                    <div class="role-selector">
+                        <button class="role-btn active" data-role="citizen">
+                            <i class="fas fa-user"></i> Citizen
+                        </button>
+                        <button class="role-btn" data-role="police">
+                            <i class="fas fa-shield-alt"></i> Police
+                        </button>
+                        <button class="role-btn" data-role="admin">
+                            <i class="fas fa-cog"></i> Admin
+                        </button>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="phone">Phone Number</label>
+                        <input type="text" id="phone" placeholder="670000001" value="670000001">
+                        <small class="hint">Use: 670000001 (Citizen), 670000002 (Police), 670000003 (Admin)</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" placeholder="Any password works" value="demo123">
+                        <small class="hint">Any password accepted for demo</small>
+                    </div>
+                    
+                    <button id="login-btn" class="btn-primary">
+                        <i class="fas fa-sign-in-alt"></i> Login
+                    </button>
+                    
+                    <div class="demo-credentials">
+                        <h4>Demo Credentials:</h4>
+                        <ul>
+                            <li><strong>Citizen:</strong> 670000001 / any password</li>
+                            <li><strong>Police:</strong> 670000002 / any password</li>
+                            <li><strong>Admin:</strong> 670000003 / any password</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Dashboard -->
+        <div id="dashboard" class="screen">
+            <header class="dashboard-header">
+                <div class="header-left">
+                    <img src="TRACKIT DOWN LOGO.png" alt="Track-It-Down logo" class="logo-small-img">
+                    <h2>Track-It-Down</h2>
+                    <div class="user-info">
+                        <span id="current-role">Citizen</span> | 
+                        <span id="current-phone">670000001</span>
+                    </div>
+                </div>
+                <button id="logout-btn" class="btn-logout">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </header>
+
+            <div class="dashboard-container">
+                <!-- Sidebar Navigation -->
+                <nav class="sidebar" id="sidebar">
+                    <!-- Role-specific menus will be injected here -->
+                </nav>
+
+                <!-- Main Content Area -->
+                <main class="main-content" id="main-content">
+                    <div id="page-content">
+                        <div class="welcome-message">
+                            <h1>Welcome to Track-It-Down</h1>
+                            <p>Select a menu option to get started</p>
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </div>
+    </div>
+
+    <!-- Templates -->
+    <template id="citizen-menu">
+        <ul>
+            <li><a href="#" data-page="citizen-dashboard"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li><a href="#" data-page="report-crime"><i class="fas fa-exclamation-circle"></i> Report Crime</a></li>
+            <li><a href="#" data-page="citizen-map"><i class="fas fa-map-marked-alt"></i> Crime Map</a></li>
+            <li><a href="#" data-page="citizen-messages"><i class="fas fa-comments"></i> Messages</a></li>
+            <li><a href="#" data-page="my-reports"><i class="fas fa-history"></i> My Reports</a></li>
+        </ul>
+    </template>
+
+    <template id="police-menu">
+        <ul>
+            <li><a href="#" data-page="police-dashboard"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li><a href="#" data-page="case-queue"><i class="fas fa-clipboard-list"></i> Case Queue</a></li>
+            <li><a href="#" data-page="police-map"><i class="fas fa-map-marked-alt"></i> Police Map</a></li>
+            <li><a href="#" data-page="police-messages"><i class="fas fa-comments"></i> Messages</a></li>
+            <li><a href="#" data-page="analytics"><i class="fas fa-chart-bar"></i> Analytics</a></li>
+        </ul>
+    </template>
+
+    <template id="admin-menu">
+        <ul>
+            <li><a href="#" data-page="admin-dashboard"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li><a href="#" data-page="manage-users"><i class="fas fa-users-cog"></i> Manage Users</a></li>
+            <li><a href="#" data-page="manage-stations"><i class="fas fa-police-box"></i> Manage Stations</a></li>
+            <li><a href="#" data-page="system-analytics"><i class="fas fa-chart-pie"></i> System Analytics</a></li>
+            <li><a href="#" data-page="audit-logs"><i class="fas fa-clipboard-check"></i> Audit Logs</a></li>
+        </ul>
+    </template>
+
+    <!-- Map Container Template -->
+    <template id="map-template">
+        <div class="page-header">
+            <h2><i class="fas fa-map-marked-alt"></i> Crime Map</h2>
+            <div class="map-controls">
+                <div class="search-box">
+                    <input type="text" id="map-search" placeholder="Search location...">
+                    <button id="search-btn"><i class="fas fa-search"></i></button>
+                </div>
+                <button id="locate-btn" class="btn-secondary">
+                    <i class="fas fa-location-arrow"></i> My Location
+                </button>
+            </div>
+        </div>
+        <div id="map" class="map-container"></div>
+        <div id="map-info" class="map-info">
+            <div id="marker-count">Markers: 0</div>
+            <div id="current-location">Location: Not set</div>
+        </div>
+    </template>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/map.js"></script>
+    <script src="js/citizen.js"></script>
+    <script src="js/police.js"></script>
+    <script src="js/admin.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
